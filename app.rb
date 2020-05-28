@@ -16,7 +16,7 @@ after { puts; }                                                                 
 
 events_table = DB.from(:events)
 rsvps_table = DB.from(:rsvps)
-# users_table = DB.from(:users)
+users_table = DB.from(:users)
 
 # Home page (all events)
 get "/" do
@@ -59,7 +59,10 @@ end
 
 # Receiving end of new user form
 get "/users/create" do
-    puts params
+    users_table.insert(:name => params["name"],
+                        :email => params["email"],
+                        :password => params["password"])
+    
     view "create_user"
 end
 
@@ -71,7 +74,19 @@ end
 # Receiving end of login form
 get "/logins/create" do
     puts params
-    view "create_login"
+    email_entered = params["email"]
+    password_entered = params["password"]
+    user = users_table.where(:email => email_entered).to_a[0]
+    if user
+        if user[:password] == password_entered
+        view "create_login"
+        else
+            view "create_login_failed"
+        end
+    else
+    view "create_login_failed"
+    end
+    
 end
 
 # Logout
