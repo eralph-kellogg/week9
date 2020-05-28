@@ -26,6 +26,7 @@ end
 
 # Show a single event
 get "/events/:id" do
+    @users_table = users_table
     # SELECT * FROM events WHERE id=:id
     @event = events_table.where(:id => params["id"]).to_a[0]
     # SELECT * FROM rsvps WHERE event_id=:id
@@ -42,7 +43,7 @@ get "/events/:id/rsvps/new" do
 end
 
 # Receiving end of new RSVP form
-get "/events/:id/rsvps/create" do
+post "/events/:id/rsvps/create" do
     rsvps_table.insert(:event_id => params["id"],
                        :going => params["going"],
                        :name => params["name"],
@@ -58,7 +59,7 @@ get "/users/new" do
 end
 
 # Receiving end of new user form
-get "/users/create" do
+post "/users/create" do
     users_table.insert(:name => params["name"],
                         :email => params["email"],
                         :password => params["password"])
@@ -72,7 +73,7 @@ get "/logins/new" do
 end
 
 # Receiving end of login form
-get "/logins/create" do
+post "/logins/create" do
     puts params
     email_entered = params["email"]
     password_entered = params["password"]
